@@ -1,4 +1,4 @@
-Algoritmo Biblioteca_sun
+Algoritmo Biblioteca_sun 
 //-Definiciones del algoritmo
 	Definir cantidad_prestamos, cantidad_devoluciones, op_menu Como Entero
 	Definir multas_generadas Como Real
@@ -21,8 +21,7 @@ Mientras op_menu <> 5 Hacer
 	Escribir '3. Reportes'
 	Escribir '4. Salir'
 	Escribir '5. Consultar reglas de prestamo'
-	Escribir 'Selecciona una opcion:'
-	Leer op_menu
+	op_menu <- leer_entero('Seleccione una opcion: ')
 	
 	Segun op_menu Hacer
 		1:
@@ -33,33 +32,93 @@ Mientras op_menu <> 5 Hacer
 			generar_reporte(cantidad_prestamos, cantidad_devoluciones, multas_generadas)
 		4:
 			Limpiar Pantalla
+			Escribir '...........................'
 			Escribir '...... REPORTE FINAL ......'
 			Escribir 'Total de prestamos: ', cantidad_prestamos
 			Escribir 'Total de devoluciones: ', cantidad_devoluciones
 			Escribir 'Total de multas generadas: ', multas_generadas
 			Escribir 'Gracias por utilizar Biblioteca Sun."
+			Esperar Tecla
 		5:
+			Limpiar Pantalla
+			Escribir '................................'
 			Escribir '...... REGLAS DE PRESTAMO ......'
 			Escribir '1. Se pueden seleccionar de 1 a 3 libros.'
 			Escribir '2. Los dias de prestamo deben ser mayores que cero.'
 			Escribir '3. Las multas dependen de los dias de atraso.'
 		De Otro Modo:
-			Escribir 'Error: Seleccione una opcion del 1 al 4'
+			Escribir 'Error: Seleccione una opcion del 1 al 5'
 			Esperar Tecla
 	FinSegun
 FinMientras
 FinAlgoritmo	
 	
 //-Inicio de funciones
-//-Funcion 1: Validar los dias del prestamo
+
+//-Funcion 1: Inicio numerico
+//-Su funcion: Leer el dato como texto y lo convierta
+Funcion punto_num <- leer_total (mensaje)
+	Definir punto_num Como Entero
+	Definir entrada Como Caracter
+	
+	Repetir
+		Escribir mensaje
+		Leer entrada
+		Si punto_num(entrada) Entonces
+			punto_num <- ConvertirANumero(entrada)
+		SiNo
+			punto_num <- -1
+			Escribir 'Denegado: Digite solamente numeros completos'
+		Fin Si
+	Hasta Que punto_num(entrada)
+	
+Fin Funcion
+
+//Funcion 2: Comprobar el inicio numerico
+//Su funcion: Devolver el Verdadero si los digitos son del 0 al 9
+Funcion resultado <- es_num (texto)
+	Definir resultado, encontrado Como Logico
+	Definir digitos, letras Como Caracter
+	Definir i, j Como Entero
+	digitos <- '0123456789'
+	resultado <- Verdadero
+	
+	Si Longitud(texto) = 0 Entonces
+		resultado <- Falso
+	SiNo
+		Para i <- 0 Hasta Longitud(texto) - 1 Hacer
+			letras <- Subcadena(texto, i, i)
+			encontrado <- Falso
+			
+			Para j <- 0 Hasta 9 Hacer
+				Si letras = Subcadena(digitos, j, j) Entonces
+					encontrado <- Verdadero
+				FinSi
+				
+			Fin Para
+			
+			Si encontrado = Falso Entonces
+				resultado <- Falso
+			Fin Si
+		Fin Para
+		
+	Fin Si
+	
+Fin Funcion
+
+//-Funcion 3: Validar los dias del prestamo
 //Su funcion: Recibe la cantidad de dias, verifica que sea mayor que 0 y devuelve los dias validos
 Funcion dias_validos <- validar_dias 
 Definir dias_validos Como Entero	
-Definir entradas_dias Como Caracter
 
 Repetir
-	Escribir 'Ingrese la cantidad de dias:'
-	Leer entradas_dias
+	dias_validos <- leer_entero('Ingrese la cantidad de dias: ')
+	
+	Si dias_validos <= 0 Entonces
+		acciones_por_verdadero
+	SiNo
+		acciones_por_falso
+	Fin Si
 	
 Hasta Que expresion_logica
 
