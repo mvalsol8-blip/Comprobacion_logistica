@@ -10,7 +10,7 @@ multas_generadas <- 0
 op_menu <- 0	
 
 //-Pantalla de bienvenida, ciclo y ejecucion
-Mientras op_menu <> 5 Hacer
+Mientras op_menu <> 4 Hacer
 	Limpiar Pantalla
 	Escribir '.................................'
 	Escribir '   Bienvenido a Biblioteca Sun   '
@@ -20,7 +20,6 @@ Mientras op_menu <> 5 Hacer
 	Escribir '2. Registrar devolucion'
 	Escribir '3. Reportes'
 	Escribir '4. Salir'
-	Escribir '5. Consultar reglas de prestamo'
 	op_menu <- leer_entero('Seleccione una opcion: ')
 	
 	Segun op_menu Hacer
@@ -39,16 +38,8 @@ Mientras op_menu <> 5 Hacer
 			Escribir 'Total de multas generadas: ', multas_generadas
 			Escribir 'Gracias por utilizar Biblioteca Sun.'
 			Esperar Tecla
-		5:
-			Limpiar Pantalla
-			Escribir '................................'
-			Escribir '...... REGLAS DE PRESTAMO ......'
-			Escribir '1. Se pueden seleccionar de 1 a 3 libros.'
-			Escribir '2. Los dias de prestamo deben ser mayores que cero.'
-			Escribir '3. Las multas dependen de los dias de atraso.'
-			Esperar Tecla
 		De Otro Modo:
-			Escribir 'Error: Seleccione una opcion del 1 al 5'
+			Escribir 'Denegado: Seleccione una opcion del 1 al 4'
 			Esperar Tecla
 	FinSegun
 FinMientras
@@ -61,17 +52,26 @@ FinAlgoritmo
 Funcion punto_num <- leer_entero(mensaje)
 	Definir punto_num Como Entero
 	Definir entrada Como Caracter
+	Definir entrada_correcta Como Logico
 	
 	Repetir
 		Escribir mensaje
 		Leer entrada
-		Si es_num(entrada) Entonces
-			punto_num <- ConvertirANumero(entrada)
-		SiNo
-			punto_num <- -1
-			Escribir 'Denegado: Digite solamente numeros completos'
-		Fin Si
-	Hasta Que es_num(entrada)
+		entrada_correcta <- es_num(entrada)
+		Si entrada_correcta Entonces
+            Si Longitud(entrada) > 9 Entonces
+                entrada_correcta <- Falso
+                Escribir 'Denegado: El numero es demasiado grande'
+            FinSi
+        SiNo
+            Escribir 'Denegado: Digite solamente numeros completos'
+        FinSi
+		
+        Si entrada_correcta Entonces
+            punto_num <- ConvertirANumero(entrada)
+        FinSi
+		
+    Hasta Que entrada_correcta
 	
 Fin Funcion
 
@@ -117,7 +117,7 @@ Funcion dias_validos <- validar_dias
         dias_validos <- leer_entero("Ingrese la cantidad de dias:")
 		
         Si dias_validos <= 0 Entonces
-            Escribir "Error: Los dias deben ser mayores que cero."
+            Escribir "Denegado: Los dias deben ser mayores que cero."
         FinSi
     Hasta Que dias_validos > 0
 FinFuncion
@@ -127,26 +127,30 @@ FinFuncion
 Funcion multa_calculada <- calcular_multa(dias)
 	Definir multa_calculada, pago Como Real
 	Definir trayecto Como Entero
-	Si  dias <= 0  Entonces
-		multa_calculada <- 0
-	SiNo
-		Si  dias <= 5 Entonces
-			trayecto <- 1
-		SiNo
-			Si dias <= 10 Entonces
-				trayecto <- 2
-			SiNo
-				trayecto <- 3
-			FinSi
-			Segun trayecto Hacer
-				1:
-					pago <- 500
-				2:
-					pago <- 750
-				3:
-					pago <- 1000
-			Fin Segun
-			multa_calculada <- dias * pago
+	Si dias <= 0 Entonces
+        multa_calculada <- 0
+    SiNo
+        Si dias <= 5 Entonces
+            trayecto <- 1
+        SiNo
+            Si dias <= 10 Entonces
+                trayecto <- 2
+            SiNo
+                trayecto <- 3
+            FinSi
+        FinSi
+		
+        Segun trayecto Hacer
+            1:
+                pago <- 500
+            2:
+                pago <- 750
+            3:
+                pago <- 1000
+        FinSegun
+		
+        multa_calculada <- dias * pago
+    FinSi
 Fin Funcion
 
 //- Subproceso 1: Registra prestamo
