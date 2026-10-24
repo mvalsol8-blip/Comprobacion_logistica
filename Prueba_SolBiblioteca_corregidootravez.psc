@@ -150,6 +150,7 @@ SubProceso registrar_prestamo(cantidad_prestamos Por referencia)
 	Escribir '...... Registrar prestamo ......'
 	Escribir '................................'
 	
+	//-Verificando nombre
 	Repetir
 		Escribir 'Ingrese el nombre del usuario: '
 		Leer nombre_usuario
@@ -160,6 +161,7 @@ SubProceso registrar_prestamo(cantidad_prestamos Por referencia)
 		
 	Hasta Que nombre_usuario <> ''
 	
+	//-Verificando codigo
 	Repetir
 		codigo_prestamo <- leer_entero ('Ingrese el codigo del prestamo: ')
 		
@@ -169,8 +171,10 @@ SubProceso registrar_prestamo(cantidad_prestamos Por referencia)
 		
 	Hasta Que codigo_prestamo > 0
 	
+	//-Verificando dias
 	dias_prestamo <- validar_dias
 	
+	//-Verificando cantidad de libros
 	Repetir
 		cantidad_libros <- leer_entero('Cantidad de libros que desea llevar (1 a 3): ')
 		
@@ -180,19 +184,144 @@ SubProceso registrar_prestamo(cantidad_prestamos Por referencia)
 		
 	Hasta Que cantidad_libros >= 1 Y cantidad_libros <= 3
 	
+	//-Comenzar lista de libros
 	libros_seleccionados <- ''
 	
+	//-Elegir libros
 	Para i <- 1 Hasta cantidad_libros Hacer
 		Limpiar Pantalla
-		Escribir lista_de_expresiones
-		Escribir lista_de_expresiones
-		Escribir lista_de_expresiones
-		Escribir lista_de_expresiones
-		Escribir lista_de_expresiones
-		Escribir lista_de_expresiones
-		Escribir lista_de_expresiones
+		Escribir 'Libro ', i, 'de ', cantidad_libros
+		Escribir '1. La hipotesis del amor '
+		Escribir '2. Enola Holmes y el carruaje negro'
+		Escribir '3. Crimen y castigo'
+		Escribir '4. Orgullo y prejuicio'
+		Escribir '5. Harry Potter y el prisionero de Azkaban'
+		Escribir '6. Los juegos del hambre'
+		
+		//-Verificando seleccion
+		Repetir
+			libro_escogido <- leer_entero('Digita el numero del libro: ')
+			Si libro_elegido < 1 O libro_elegido > 6 Entonces
+				Escribir 'Denegado: Seleccione un libro del 1 al 6: '
+			Fin Si
+		Hasta Que libro_elegido >= 1 Y libro_elegido <= 6
+		
+		//-Definiendo titulo
+		Segun libro_escogido Hacer
+			1:
+                nombre_libro <- 'La hipotesis del amor'
+				
+            2:
+                nombre_libro <- 'Enola Holmes y el carruaje negro'
+				
+            3:
+                nombre_libro <- 'Crimen y castigo'
+				
+            4:
+                nombre_libro <- 'Orgullo y prejuicio'
+				
+            5:
+                nombre_libro <- 'Harry Potter y el prisionero de Azkaban'
+				
+            6:
+                nombre_libro <- 'Los juegos del hambre'
+		Fin Segun
+		
+		//-Añadiendo titulo
+		libros_seleccionados <- libros_seleccionados + nombre_libro + ', '
 		
 	Fin Para
 	
-	 FinSubProceso
+	//Actualizando contador
+	cantidad_prestamos <- cantidad_prestamos + 1
 	
+	//Enseñar comprobante
+	Limpiar Pantalla
+	Escribir '...... PRESTAMO REGISTRADO ......'
+	Escribir '.................................'
+	Escribir 'Usuario: ', nombre_usuario
+	Escribir 'Codigo del prestamo: ', codigo_prestamo
+	Escribir 'Dias del prestamo: ', dias_prestamo
+	Escribir 'Cantidad de libros: ', cantidad_libros
+	Escribir 'Libros escogidos: '
+	Escribir libros_seleccionados
+	Escribir 'Total de prestamos registrados: ', cantidad_prestamos
+	Escribir '.................................'
+	Escribir 'Escoje una tecla para continuar'
+	Esperar Tecla
+FinSubProceso
+
+//-Subproceso 2: Registrar devolucion
+SubProceso registrar_devolucion(cantidad_devoluciones Por Referencia, multas_generadas Por Referencia)
+//Diseñando definirs	
+	Definir nombre_usuario Como Caracter
+	Definir multa Como Logico
+	Definir codigo_prestamo, op_atraso, dias_atraso Como Entero
+	Limpiar Pantalla
+	Escribir '...... REGISTRO DE DEVOLUCION ......'
+	Escribir '....................................'
+	
+	//Verificando
+	Repetir
+		Escribir 'Digite el nombre del usuario: '
+		Leer nombre_usuario
+		Si nombre_usuario = '' Entonces
+			Escribir 'Denegado: El nombre no puede estar vacio'
+		Fin Si
+	Hasta Que nombre_usuario <> ''
+	
+	//-Verificando codigo
+	Repetir
+		codigo_prestamo <- leer_entero('Digite el codigo del prestamo: ')
+		Si codigo_prestamo <= 0 Entonces
+			Escribir 'Denegado: el codigo debe ser mayor que cero'
+		Fin Si
+	Hasta Que codigo_prestamo > 0
+	
+	//-Consultar sobre atrasos
+	Repetir
+		Escribir '¿La devolucion tiene dias de atraso?'
+		Escribir '1. Si'
+		Escribir '2. No'
+		op_atraso <- leer_entero('Escoja una opcion: ')
+		
+		Si op_atraso <> 1 Y op_atraso <> 2 Entonces
+			Escribir 'Denegado: Seleccione 1 o 2'
+		Fin Si
+		
+	Hasta Que op_atraso = 1 O op_atraso = 2
+	
+	//-Verificar dias de atraso
+	Si op_atraso = 1 Entonces
+		dias_atraso <- validar_dias
+	SiNo
+		dias_atraso <- 0
+	Fin Si
+	
+	//-Verificar multa
+	multa <- calcular_multa(dias_atraso)
+	//Acumular multas
+	multas_generadas <- multas_generadas + multa
+	//Actualizar devoluciones
+	cantidad_devoluciones <- cantidad_devoluciones + 1
+	
+	//Mostrar comprobante
+	Limpiar Pantalla
+	Escribir '...... REGISTRO DE DEVOLUCION ......'
+	Escribir '....................................'
+	Escribir 'Usuario: ', nombre_usuario
+	Escribir 'Codigo del prestamo: ', codigo_prestamo
+	Escribir 'Dias de atraso: ', dias_atraso
+	
+	Si multa > 0 Entonces
+		Escribir 'Multa de esta devolucion: ', multa
+	SiNo
+		Escribir 'Devolucion a tiempo, no tiene multa'
+	Fin Si
+	Escribir 'Total acumulado de multas: ', multas_generadas
+	Escribir 'Total de devoluciones: ', cantidad_devoluciones
+	Escribir '....................................'
+	Escribir 'Escoja una tecla para continuar'
+	Esperar Tecla
+FinSubProceso
+
