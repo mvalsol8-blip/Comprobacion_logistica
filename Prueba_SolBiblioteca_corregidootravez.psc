@@ -1,3 +1,68 @@
 Algoritmo Biblioteca_sun
+//-Definiciones del algoritmo
+	Definir cantidad_prestamos, cantidad_devoluciones, op_menu Como Entero
+	Definir multas_generadas Como Real
 	
+//-Contadores y acumuladores
+cantidad_prestamos <- 0
+cantidad_devoluciones <- 0
+multas_generadas <- 0
+op_menu <- 0	
+
+//-Pantalla de bienvenida, ciclo y ejecucion
+Mientras op_menu <> 5 Hacer
+	Limpiar Pantalla
+	Escribir '.................................'
+	Escribir '   Bienvenido a Biblioteca Sun   '
+	Escribir '.................................'
+	Escribir '   MENÚ PRINCIPAL:     '
+	Escribir '1. Registrar prestamo'
+	Escribir '2. Registrar devolucion'
+	Escribir '3. Reportes'
+	Escribir '4. Salir'
+	Escribir '5. Consultar reglas de prestamo'
+	Escribir 'Selecciona una opcion:'
+	Leer op_menu
+	
+	Segun op_menu Hacer
+		1:
+			registrar_prestamo(cantidad_prestamos)
+		2:
+			registrar_devolucion(cantidad_devoluciones, multas_generadas)
+		3:
+			generar_reporte(cantidad_prestamos, cantidad_devoluciones, multas_generadas)
+		4:
+			Limpiar Pantalla
+			Escribir '...... REPORTE FINAL ......'
+			Escribir 'Total de prestamos: ', cantidad_prestamos
+			Escribir 'Total de devoluciones: ', cantidad_devoluciones
+			Escribir 'Total de multas generadas: ', multas_generadas
+			Escribir 'Gracias por utilizar Biblioteca Sun."
+		5:
+			Escribir '...... REGLAS DE PRESTAMO ......'
+			Escribir '1. Se pueden seleccionar de 1 a 3 libros.'
+			Escribir '2. Los dias de prestamo deben ser mayores que cero.'
+			Escribir '3. Las multas dependen de los dias de atraso.'
+		De Otro Modo:
+			Escribir 'Error: Seleccione una opcion del 1 al 4'
+			Esperar Tecla
+	FinSegun
+FinMientras
+FinAlgoritmo	
+	
+//-Inicio de funciones
+//-Funcion 1: Validar los dias del prestamo
+//Su funcion: Recibe la cantidad de dias, verifica que sea mayor que 0 y devuelve los dias validos
+Funcion dias_validos <- validar_dias 
+Definir dias_validos Como Entero	
+Definir entradas_dias Como Caracter
+
+Repetir
+	Escribir 'Ingrese la cantidad de dias:'
+	Leer entradas_dias
+	
+Hasta Que expresion_logica
+
+Fin Funcion
+
 FinAlgoritmo
