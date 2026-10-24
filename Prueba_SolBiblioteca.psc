@@ -1,339 +1,330 @@
-//Prueba_SolValerio_22,23/10
-//Esta prueba ejecuta la funcion de una biblioteca, pide, presta,devuelve y multa por libro sugerido
-
 Algoritmo Biblioteca_Sun
-//-Definiciones del algoritmo
-Definir cantidad_prestamos, cantidad_devoluciones, op_menu Como Entero
-Definir multas_generadas Como Real
-
-//-Contadores y acumuladores
-cantidad_prestamos <- 0
-cantidad_devoluciones <- 0
-multas_generadas <- 0
-op_menu <- 0
-
-//-Pantalla de bienvenida 
-//-Ciclo y ejecucion
-Mientras op_menu <> 4 Hacer
-	Limpiar Pantalla
-	Escribir '.................................'
-	Escribir '   Bienvenido a Biblioteca Sun   '
-	Escribir '.................................'
-	Escribir '   MENÚ PRINCIPAL:     '
-	Escribir '1. Registrar prestamo'
-	Escribir '2. Registrar devolucion'
-	Escribir '3. Reportes'
-	Escribir '4. Salir'
-	Escribir 'Selecciona una opcion:'
-	Escribir 'Pili linda'
-	Leer op_menu
+    //- Definicion del algoritmo
+    Definir cantidad_prestamos, cantidad_devoluciones, op_menu, i Como Entero
+    Definir multas_generadas Como Real
+    Definir prest_usuario Como Caracter
+    Definir prest_codigo, prest_dias, prest_cant Como Entero
+    Definir prest_devuelto Como Logico
 	
-	Segun op_menu Hacer
-		1:
-			registrar_prestamo(cantidad_prestamos)
-		2:
-			registrar_devolucion(cantidad_devoluciones, multas_generadas)
-		3:
-			generar_reporte(cantidad_prestamos, cantidad_devoluciones, multas_generadas)
-		4:
-			Limpiar Pantalla
-			Escribir '========================================'
-			Escribir 'Gracias por utilizar Biblioteca Sun.'
-			Escribir 'Saliendo del sistema...'
-			Escribir '========================================'
-			
-		De Otro Modo:
-			Escribir 'Error: Seleccione una opcion del 1 al 4'
-			Esperar Tecla
-	FinSegun
-FinMientras
+    //- Dimension de los arreglos
+    Dimension prest_usuario[100]
+    Dimension prest_codigo[100], prest_dias[100], prest_cant[100]
+    Dimension prest_devuelto[100]
+	
+    //- Inicializacion de contadores y variables
+    cantidad_prestamos <- 0
+    cantidad_devoluciones <- 0
+    multas_generadas <- 0
+    op_menu <- 0
+	
+    //- Inicializacion de los arreglos
+    Para i <- 1 Hasta 100 Hacer
+        prest_usuario[i] <- ''
+        prest_codigo[i] <- 0
+        prest_dias[i] <- 0
+        prest_cant[i] <- 0
+        prest_devuelto[i] <- Falso
+    FinPara
+	
+    //- Menu principal y ejecucion del sistema
+    Mientras op_menu <> 4 Hacer
+        Limpiar Pantalla
+        Escribir '.................................'
+        Escribir '   Bienvenido a Biblioteca Sun'
+        Escribir '.................................'
+        Escribir '       MENU PRINCIPAL'
+        Escribir '1. Registrar prestamo'
+        Escribir '2. Registrar devolucion'
+        Escribir '3. Reportes'
+        Escribir '4. Salir'
+        Escribir 'Seleccione una opcion:'
+        Leer op_menu
+		
+        Segun op_menu Hacer
+            1:
+                RegistrarPrestamo(cantidad_prestamos, prest_usuario, prest_codigo, prest_dias, prest_cant, prest_devuelto)
+            2:
+                RegistrarDevolucion(cantidad_devoluciones, multas_generadas, cantidad_prestamos, prest_usuario, prest_codigo, prest_dias, prest_cant, prest_devuelto)
+            3:
+                GenerarReporte(cantidad_prestamos, cantidad_devoluciones, multas_generadas)
+            4:
+                Limpiar Pantalla
+                Escribir '...........................'
+                Escribir '      REPORTE FINAL'
+                Escribir 'Total de prestamos: ', cantidad_prestamos
+                Escribir 'Total de devoluciones: ', cantidad_devoluciones
+                Escribir 'Total de multas generadas: ', multas_generadas
+                Escribir 'Gracias por utilizar Biblioteca Sun.'
+                Esperar Tecla
+            De Otro Modo:
+                Escribir 'Error: seleccione una opcion del 1 al 4.'
+                Esperar Tecla
+        FinSegun
+    FinMientras
 FinAlgoritmo
 
-//Funcion 1: Validar dias del prestamo
-//Su funcion: Recibe la cantidad de dias que ingresa el usuario, verifica que sea mayor que 0 y devuelve los dias validos
-Funcion dias_validos <- validar_dias 
-Definir dias_validos Como Entero	
-Repetir
-	Escribir 'Ingrese los dias del prestamo:'
-	Leer dias_validos
-	Si dias_validos <= 0 Entonces
-		Escribir 'Error: Ingrese un numero mayor a cero'
-	FinSi
-Hasta Que dias_validos > 0
-FinFuncion
 
-//Funcion 2: Calcular multa
-//Su funcion: Recibe los dias de atraso y devuelve el monto de la multa calculada segun la cantidad de dias
-
-Funcion multa_calculada <- calcular_multa (dias)
-Definir multa_calculada Como Real	
-Si dias <= 0 Entonces
-	multa_calculada <- 0
-SiNo
-	Segun dias Hacer
-		1, 2, 3, 4, 5:
-			multa_calculada <- dias * 500
-		6, 7, 8, 9, 10:
-			multa_calculada <- dias * 750
-		De Otro Modo:
-			multa_calculada <- dias * 1000
-	FinSegun
-FinSi
-FinFuncion
-
-//Funcion 3: Registrar prestamo
-//Su funcion: Recibe el contador de prestamos por referencia, solicita los datos del usuario y los libros seleccionados, registra el prestamo y aumenta el contador
-
-Funcion registrar_prestamo (cantidad_prestamos Por Referencia)
-Definir nombre_usuario, nombre_libro, libros_seleccionados Como Caracter
-Definir codigo_prestamo, dias_prestamo, cantidad_libros, libro_elegido, i Como Entero
-
-Limpiar Pantalla
-Escribir '================================='
-Escribir '       Registrar prestamo        '
-Escribir '================================='
-
-//Validar el nombre
-Escribir 'Ingrese el nombre del usuario:'
-Leer nombre_usuario
-
-Mientras nombre_usuario = '' Hacer
-	Escribir 'Error: El nombre no puede estar vacio'
-	Escribir 'Ingrese el nombre del usuario: '
-	Leer nombre_usuario
-FinMientras
-
-//Validar codigo
-Repetir
-	Escribir 'Ingrese el codigo del prestamo:'
-	Leer codigo_prestamo 
-	Si codigo_prestamo <= 0 Entonces
-		Escribir 'Error: El codigo debe ser mayor a cero'
-	FinSi
-Hasta Que codigo_prestamo > 0
-
-//Solicitar dias
-dias_prestamo <- validar_dias
-
-//Validar la cantidad permitida
-Repetir
-	Escribir 'Cantidad de libros que desea llevar (1 a 3)'
-	Leer cantidad_libros
-	Si cantidad_libros < 1 O cantidad_libros > 3 Entonces
-		Escribir 'Error: Solo puede llevar de 1 a 3 libros'
-	FinSi
-Hasta Que cantidad_libros >= 1 Y cantidad_libros <= 3
-
-//Iniciar lista de titulos
-libros_seleccionados <- ''
-
-//Permite seleccionar cada libro
-Para i <- 1 Hasta cantidad_libros Hacer
-	Limpiar Pantalla
-	Escribir 'Libro ', i, ' de ', cantidad_libros
-	Escribir '1. La hipotesis del amor'
-	Escribir '2. Enola Holmes y el carruaje negro'
-	Escribir '3. Crimen y castigo'
-	Escribir '4. Orgullo y prejuicio'
-	Escribir '5. Harry Potter y el prisionero de Azkaban'
-	Escribir '6. Los juegos del hambre'	
-//Validar el numero
-	Repetir
-		Escribir 'Ingrese el numero del libro: '
-		Leer libro_elegido
-		Si libro_elegido < 1 O libro_elegido > 6 Entonces
-			Escribir 'Error: Seleccione un libro del 1 al 6'
-		FinSi
-	Hasta Que libro_elegido >= 1 Y libro_elegido <= 6
-//Convertir el numero
-	Segun libro_elegido Hacer
-		1:
-			nombre_libro <- 'La hipotesis del amor'
-		2:
-			nombre_libro <- 'Enola Holmes y el carruaje negro'
-		3:
-			nombre_libro <- 'Crimen y castigo'
-		4:
-			nombre_libro <- 'Orgullo y prejuicio'
-		5:
-			nombre_libro <- 'Harry Potter y el prisionero de Azkaban'
-		6:
-			nombre_libro <- 'Los juegos del hambre'
-	FinSegun
-//Guardar el titulo
-	libros_seleccionados <- libros_seleccionados + nombre_libro + ', '
-FinPara
-//Actualizar
-cantidad_prestamos <- cantidad_prestamos + 1
-//Mostrar el prestamo
-Limpiar Pantalla
-Escribir '================================='
-Escribir '       Registrar prestamo        '
-Escribir '================================='
-Escribir 'Usuario: ', nombre_usuario
-Escribir 'Codigo del prestamo: ', codigo_prestamo
-Escribir 'Dias del prestamo: ', dias_prestamo
-Escribir 'Cantidad de libros: ', cantidad_libros
-Escribir 'Libros seleccionados: '
-Escribir libros_seleccionados
-Escribir '================================='
-Escribir 'Prestamo registrado con exito'
-Escribir 'Total de prestamos registrados: ', cantidad_prestamos
-Escribir '================================='
-Escribir 'Presione la tecla enter para continuar...'
-Esperar Tecla
-FinFuncion
-
-//Funcion 4: Registrar devolucion
-//Su funcion es: Recibir el contador de devoluciones y el acumulador de multas por referencia, solicitando los datos de devolucion, calculando la multa correspondiente y actualizando los valores
-Funcion registrar_devolucion (cantidad_devoluciones Por Referencia, multas_generadas Por Referencia)
-Definir nombre_usuario Como Caracter
-Definir multa Como Real
-Definir codigo_prestamo, op_atraso, dias_atraso Como Entero
-
-Limpiar Pantalla
-Escribir '================================='
-Escribir '       Registrar devolucion      '
-Escribir '================================='
-
-//Validar el nombre
-Escribir 'Ingrese el nombre del usuario: '
-Leer nombre_usuario
-
-Mientras nombre_usuario = '' Hacer
-	Escribir 'Error: El nombre no puede estar vacio'
-	Escribir 'Ingrese el nombre del usuario: '
-	Leer nombre_usuario
-FinMientras
-
-//Validar el codigo
-Repetir
-	Escribir 'Ingrese el codigo del prestamo:'
-	Leer codigo_prestamo
-	Si codigo_prestamo <= 0 Entonces
-		Escribir 'Error: El codigo debe ser mayor a cero'
-	FinSi
-Hasta Que codigo_prestamo > 0
-
-//Preguntar
-Repetir
-	Escribir 'La devolucion tiene dias de atraso'
-	Escribir '1. Si'
-	Escribir '2. No'
-	Leer op_atraso
+//- Funcion para validar la cantidad de dias
+Funcion dias_validos <- ValidarDias()
+    Definir dias_validos Como Entero
 	
-	Si op_atraso <> 1 Y op_atraso <> 2 Entonces
-		Escribir 'Error: Seleccione 1 o 2'
-	FinSi
-Hasta Que op_atraso = 1 O op_atraso = 2
-
-//Validar dias
-Si op_atraso = 1 Entonces
-	Repetir
-		Escribir 'Ingrese la cantidad de dias de atraso:'
-		Leer dias_atraso
+    Repetir
+        Escribir 'Ingrese la cantidad de dias:'
+        Leer dias_validos
 		
-		Si dias_atraso <= 0 Entonces
-			Escribir 'Error: Los dias de atraso deben ser mayores a cero'
-		FinSi
-	Hasta Que dias_atraso > 0
-SiNo
-	dias_atraso <- 0
-FinSi
-
-//Calcular la multa
-multa <- calcular_multa (dias_atraso)
-
-//Acumular el monto
-multas_generadas <- multas_generadas + multa
-
-//Actualizar el contador
-cantidad_devoluciones <- cantidad_devoluciones + 1
-
-//Mostrar el comprobante
-Escribir '================================='
-Escribir '       Registrar devolucion      '
-Escribir '================================='
-Escribir 'Usuario: ', nombre_usuario
-Escribir 'Codigo del prestamo: ', codigo_prestamo
-Escribir 'Dias de atraso: ', dias_atraso
-
-Si multa > 0 Entonces
-	Escribir 'Multa de esta devolucion: ', multa
-SiNo
-	Escribir 'Devolucion a tiempo, no tiene multa'
-FinSi
-
-Escribir 'Total acumulado de multas: ', multas_generadas
-Escribir 'Total de devoluciones: ', cantidad_devoluciones
-Escribir 'Devolucion registrada correctamente'
-Escribir '================================='
-Escribir 'Presiona tecla enter para continuar...'
-Esperar Tecla
+        Si dias_validos <= 0 Entonces
+            Escribir 'Error: debe ingresar un numero mayor que cero.'
+        FinSi
+    Hasta Que dias_validos > 0
 FinFuncion
 
-//Funcion 5: Generar reportes
-//Su funcion es: Recibir los totales de prestamos, devoluciones y multas para mostrarlos en los reportes
-Funcion generar_reporte (cantidad_prestamos, cantidad_devoluciones, multas_generadas)
-	Definir op_reporte Como Entero	
-	Definir promedio_multas Como Real
 
-//Ciclo Repetir
-Repetir
-	Limpiar Pantalla
-	Escribir '================================='
-	Escribir '         Generar reportes        '
-	Escribir '================================='
-	Escribir '1. Cantidad de prestamos'
-	Escribir '2. Cantidad de devoluciones'
-	Escribir '3. Total de multas'
-	Escribir '4. Reporte general'
-	Escribir '5. Volver al menu principal'
-	Escribir 'Seleccione una opcion: '
-	Leer op_reporte
+//- Funcion para calcular la multa por atraso
+Funcion multa_calculada <- CalcularMulta(dias_atraso)
+    Definir multa_calculada Como Real
+    Definir tramo, tarifa Como Entero
 	
-//Mostrar el reporte	
-	Segun op_reporte Hacer
-		1:
-			Escribir 'Total de prestamos: ', cantidad_prestamos
-			
-		2:
-			Escribir 'Total de devoluciones: ', cantidad_devoluciones
-			
-		3:
-			Si multas_generadas = 0 Entonces
-				Escribir 'No se han generado multas.'
-			SiNo
-				Escribir 'Total acumulado de multas: ', multas_generadas
-			FinSi
-			
-		4:
-			Limpiar Pantalla
-			Escribir '=========== REPORTE GENERAL ============='
-			Escribir 'Total de prestamos: ', cantidad_prestamos
-			Escribir 'Total de devoluciones: ', cantidad_devoluciones
-			Escribir 'Total acumulado de multas: ', multas_generadas
-			
-			Si cantidad_devoluciones > 0 Entonces
-				promedio_multas <- multas_generadas / cantidad_devoluciones
-				Escribir 'Promedio de multa por devolucion: ', promedio_multas
-			SiNo
-				Escribir 'Promedio de multa: No disponible'
-				Escribir 'Aun no se han registrado devoluciones'
-			FinSi
-			Escribir '========================================'
-			
-		5:
-			Escribir 'Regresando al menu principal...'
-
-		De Otro Modo:
-			Escribir 'Error: Seleccione una opcion del 1 al 5'
-	FinSegun
+    multa_calculada <- 0
+    tramo <- 0
+    tarifa <- 0
 	
-//Pausar 	
-	Si op_reporte <> 5 Entonces
-		Esperar Tecla
-	FinSi
-Hasta Que op_reporte = 5
-	
+    Si dias_atraso > 0 Entonces
+        Si dias_atraso <= 5 Entonces
+            tramo <- 1
+        Sino
+            Si dias_atraso <= 10 Entonces
+                tramo <- 2
+            Sino
+                tramo <- 3
+            FinSi
+        FinSi
+		
+        Segun tramo Hacer
+            1:
+                tarifa <- 500
+            2:
+                tarifa <- 750
+            3:
+                tarifa <- 1000
+        FinSegun
+		
+        multa_calculada <- dias_atraso * tarifa
+    FinSi
 FinFuncion
+
+
+//- SubProceso para registrar un prestamo
+SubProceso RegistrarPrestamo(cantidad_prestamos Por Referencia, prest_usuario Por Referencia, prest_codigo Por Referencia, prest_dias Por Referencia, prest_cant Por Referencia, prest_devuelto Por Referencia)
+    Definir usuario Como Caracter
+    Definir codigo, dias, cantidad_libros, i Como Entero
+	
+    Limpiar Pantalla
+    Escribir '...... REGISTRAR PRESTAMO ......'
+	
+    Si cantidad_prestamos >= 100 Entonces
+        Escribir 'Error: se alcanzo el limite de prestamos.'
+        Esperar Tecla
+    Sino
+        //- Validacion del nombre del usuario
+        Repetir
+            Escribir 'Ingrese el nombre del usuario:'
+            Leer usuario
+			
+            Si usuario = '' Entonces
+                Escribir 'Error: el nombre no puede quedar vacio.'
+            FinSi
+        Hasta Que usuario <> ''
+		
+        //- Validacion del codigo del prestamo
+        Repetir
+            Escribir 'Ingrese el codigo del prestamo:'
+            Leer codigo
+			
+            Si codigo <= 0 Entonces
+                Escribir 'Error: el codigo debe ser mayor que cero.'
+            Sino
+                Para i <- 1 Hasta cantidad_prestamos Hacer
+                    Si prest_codigo[i] = codigo Entonces
+                        Escribir 'Error: ese codigo ya fue utilizado.'
+                        codigo <- 0
+                    FinSi
+                FinPara
+            FinSi
+        Hasta Que codigo > 0
+		
+        //- Registro de los dias del prestamo
+        dias <- ValidarDias()
+		
+        //- Validacion de la cantidad de libros
+        Repetir
+            Escribir 'Cantidad de libros (entre 1 y 3):'
+            Leer cantidad_libros
+			
+            Si cantidad_libros < 1 O cantidad_libros > 3 Entonces
+                Escribir 'Error: debe ingresar entre 1 y 3 libros.'
+            FinSi
+        Hasta Que cantidad_libros >= 1 Y cantidad_libros <= 3
+		
+        //- Almacenamiento de los datos del prestamo
+        cantidad_prestamos <- cantidad_prestamos + 1
+        prest_usuario[cantidad_prestamos] <- usuario
+        prest_codigo[cantidad_prestamos] <- codigo
+        prest_dias[cantidad_prestamos] <- dias
+        prest_cant[cantidad_prestamos] <- cantidad_libros
+        prest_devuelto[cantidad_prestamos] <- Falso
+		
+        //- Confirmacion del prestamo registrado
+        Escribir ' '
+        Escribir 'Prestamo registrado correctamente.'
+        Escribir 'Usuario: ', usuario
+        Escribir 'Codigo del prestamo: ', codigo
+        Escribir 'Dias del prestamo: ', dias
+        Escribir 'Cantidad de libros: ', cantidad_libros
+        Escribir 'Total de prestamos registrados: ', cantidad_prestamos
+        Esperar Tecla
+    FinSi
+FinSubProceso
+
+
+//- SubProceso para registrar una devolucion
+SubProceso RegistrarDevolucion(cantidad_devoluciones Por Referencia, multas_generadas Por Referencia, cantidad_prestamos, prest_usuario, prest_codigo, prest_dias, prest_cant, prest_devuelto Por Referencia)
+    Definir codigo, posicion, op_atraso, dias_atraso Como Entero
+    Definir multa Como Real
+    Definir i Como Entero
+	
+    Limpiar Pantalla
+    Escribir '...... REGISTRO DE DEVOLUCION ......'
+	
+    //- Verificacion de prestamos pendientes
+    Si cantidad_devoluciones >= cantidad_prestamos Entonces
+        Escribir 'No hay prestamos pendientes.'
+        Esperar Tecla
+    Sino
+        posicion <- 0
+		
+        //- Busqueda y validacion del codigo del prestamo
+        Repetir
+            Escribir 'Digite el codigo del prestamo que desea devolver:'
+            Leer codigo
+			
+            Si codigo > 0 Entonces
+                Para i <- 1 Hasta cantidad_prestamos Hacer
+                    Si prest_codigo[i] = codigo Entonces
+                        posicion <- i
+                    FinSi
+                FinPara
+            FinSi
+			
+            Si posicion = 0 Entonces
+                Escribir 'Error: no existe un prestamo con ese codigo.'
+            Sino
+                Si prest_devuelto[posicion] Entonces
+                    Escribir 'Error: ese prestamo ya fue devuelto.'
+                    posicion <- 0
+                FinSi
+            FinSi
+        Hasta Que posicion > 0
+		
+        //- Consulta sobre los dias de atraso
+        Repetir
+            Escribir 'La devolucion tiene dias de atraso?'
+            Escribir '1. Si'
+            Escribir '2. No'
+            Leer op_atraso
+			
+            Si op_atraso <> 1 Y op_atraso <> 2 Entonces
+                Escribir 'Error: seleccione 1 o 2.'
+            FinSi
+        Hasta Que op_atraso = 1 O op_atraso = 2
+		
+        //- Registro de los dias de atraso
+        Si op_atraso = 1 Entonces
+            dias_atraso <- ValidarDias()
+        Sino
+            dias_atraso <- 0
+        FinSi
+		
+        //- Calculo y acumulacion de la multa
+        multa <- CalcularMulta(dias_atraso)
+        multas_generadas <- multas_generadas + multa
+		
+        //- Actualizacion de la devolucion
+        cantidad_devoluciones <- cantidad_devoluciones + 1
+        prest_devuelto[posicion] <- Verdadero
+		
+        //- Comprobante de devolucion
+        Escribir 'Devolucion registrada correctamente.'
+        Escribir 'Usuario: ', prest_usuario[posicion]
+        Escribir 'Codigo del prestamo: ', prest_codigo[posicion]
+        Escribir 'Cantidad de libros: ', prest_cant[posicion]
+        Escribir 'Dias del prestamo: ', prest_dias[posicion]
+        Escribir 'Dias de atraso: ', dias_atraso
+		
+        //- Resultado de la multa
+        Si multa > 0 Entonces
+            Escribir 'Multa de esta devolucion: ', multa
+        Sino
+            Escribir 'Devolucion a tiempo, no tiene multa.'
+        FinSi
+		
+        //- Totales actualizados
+        Escribir 'Total acumulado de multas: ', multas_generadas
+        Escribir 'Total de devoluciones: ', cantidad_devoluciones
+        Esperar Tecla
+    FinSi
+FinSubProceso
+
+
+//- SubProceso para generar reportes
+SubProceso GenerarReporte(cantidad_prestamos, cantidad_devoluciones, multas_generadas)
+    Definir op_reporte Como Entero
+    Definir promedio_multas Como Real
+	
+    //- Menu de reportes
+    Repetir
+        Limpiar Pantalla
+        Escribir '......... GENERAR REPORTES .........'
+        Escribir '1. Cantidad de prestamos'
+        Escribir '2. Cantidad de devoluciones'
+        Escribir '3. Total de multas'
+        Escribir '4. Reporte general'
+        Escribir '5. Volver al menu principal'
+        Escribir 'Seleccione una opcion:'
+        Leer op_reporte
+		
+        //- Seleccion del reporte solicitado
+        Segun op_reporte Hacer
+            1:
+                Escribir 'Total de prestamos: ', cantidad_prestamos
+                Esperar Tecla
+            2:
+                Escribir 'Total de devoluciones: ', cantidad_devoluciones
+                Esperar Tecla
+            3:
+                Escribir 'Total acumulado de multas: ', multas_generadas
+                Esperar Tecla
+            4:
+                //- Presentacion del reporte general
+                Escribir '......... REPORTE GENERAL .........'
+                Escribir 'Total de prestamos: ', cantidad_prestamos
+                Escribir 'Total de devoluciones: ', cantidad_devoluciones
+                Escribir 'Total acumulado de multas: ', multas_generadas
+				
+                //- Calculo del promedio de multas
+                Si cantidad_devoluciones > 0 Entonces
+                    promedio_multas <- multas_generadas / cantidad_devoluciones
+                    Escribir 'Promedio de multa por devolucion: ', promedio_multas
+                Sino
+                    Escribir 'Promedio de multa: no disponible'
+                    Escribir 'No se han registrado devoluciones.'
+                FinSi
+				
+                Esperar Tecla
+            5:
+                Escribir 'Regresando al menu principal.'
+            De Otro Modo:
+                Escribir 'Error: seleccione una opcion del 1 al 5.'
+                Esperar Tecla
+        FinSegun
+    Hasta Que op_reporte = 5
+FinSubProceso
