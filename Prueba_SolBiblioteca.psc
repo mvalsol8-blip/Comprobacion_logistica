@@ -1,23 +1,23 @@
 Algoritmo Biblioteca_Sun
-    //- Definicion del algoritmo
+    //- Definirs
     Definir cantidad_prestamos, cantidad_devoluciones, op_menu, i Como Entero
     Definir multas_generadas Como Real
     Definir prest_usuario Como Caracter
     Definir prest_codigo, prest_dias, prest_cant Como Entero
     Definir prest_devuelto Como Logico
 	
-    //- Dimension de los arreglos
+    //- Dimensiones
     Dimension prest_usuario[100]
     Dimension prest_codigo[100], prest_dias[100], prest_cant[100]
     Dimension prest_devuelto[100]
 	
-    //- Inicializacion de contadores y variables
+    //- Contadores y variables
     cantidad_prestamos <- 0
     cantidad_devoluciones <- 0
     multas_generadas <- 0
     op_menu <- 0
 	
-    //- Inicializacion de los arreglos
+    //- Comienzo en los arreglos
     Para i <- 1 Hasta 100 Hacer
         prest_usuario[i] <- ''
         prest_codigo[i] <- 0
@@ -26,7 +26,7 @@ Algoritmo Biblioteca_Sun
         prest_devuelto[i] <- Falso
     FinPara
 	
-    //- Menu principal y ejecucion del sistema
+    //- Menu principal 
     Mientras op_menu <> 4 Hacer
         Limpiar Pantalla
         Escribir '.................................'
@@ -64,7 +64,8 @@ Algoritmo Biblioteca_Sun
 FinAlgoritmo
 
 
-//- Funcion para validar la cantidad de dias
+//- Funcion 1:Validar dias
+//-Su funcion es: Poder llevar un registro de dias con base lo que el usuario comenta
 Funcion dias_validos <- ValidarDias()
     Definir dias_validos Como Entero
 	
@@ -79,7 +80,8 @@ Funcion dias_validos <- ValidarDias()
 FinFuncion
 
 
-//- Funcion para calcular la multa por atraso
+//- Funcion 2: Multas
+//-Su funcion es: Calcular las multas por dias de atraso 
 Funcion multa_calculada <- CalcularMulta(dias_atraso)
     Definir multa_calculada Como Real
     Definir tramo, tarifa Como Entero
@@ -113,7 +115,8 @@ Funcion multa_calculada <- CalcularMulta(dias_atraso)
 FinFuncion
 
 
-//- SubProceso para registrar un prestamo
+//- SubProceso 1
+//-Su funcion es: Verificar la forma correcta de registrar un prestamo
 SubProceso RegistrarPrestamo(cantidad_prestamos Por Referencia, prest_usuario Por Referencia, prest_codigo Por Referencia, prest_dias Por Referencia, prest_cant Por Referencia, prest_devuelto Por Referencia)
     Definir usuario Como Caracter
     Definir codigo, dias, cantidad_libros, i Como Entero
@@ -165,7 +168,7 @@ SubProceso RegistrarPrestamo(cantidad_prestamos Por Referencia, prest_usuario Po
             FinSi
         Hasta Que cantidad_libros >= 1 Y cantidad_libros <= 3
 		
-        //- Almacenamiento de los datos del prestamo
+        //- Memoria de los datos en la ventana de prestamos
         cantidad_prestamos <- cantidad_prestamos + 1
         prest_usuario[cantidad_prestamos] <- usuario
         prest_codigo[cantidad_prestamos] <- codigo
@@ -173,7 +176,7 @@ SubProceso RegistrarPrestamo(cantidad_prestamos Por Referencia, prest_usuario Po
         prest_cant[cantidad_prestamos] <- cantidad_libros
         prest_devuelto[cantidad_prestamos] <- Falso
 		
-        //- Confirmacion del prestamo registrado
+        //- Afirmacion del prestamo
         Escribir ' '
         Escribir 'Prestamo registrado correctamente.'
         Escribir 'Usuario: ', usuario
@@ -186,7 +189,8 @@ SubProceso RegistrarPrestamo(cantidad_prestamos Por Referencia, prest_usuario Po
 FinSubProceso
 
 
-//- SubProceso para registrar una devolucion
+//- SubProceso 2: Devolucion
+//-Su funcion es: Registrar la devolucion de libros
 SubProceso RegistrarDevolucion(cantidad_devoluciones Por Referencia, multas_generadas Por Referencia, cantidad_prestamos, prest_usuario, prest_codigo, prest_dias, prest_cant, prest_devuelto Por Referencia)
     Definir codigo, posicion, op_atraso, dias_atraso Como Entero
     Definir multa Como Real
@@ -202,7 +206,7 @@ SubProceso RegistrarDevolucion(cantidad_devoluciones Por Referencia, multas_gene
     Sino
         posicion <- 0
 		
-        //- Busqueda y validacion del codigo del prestamo
+        //- Busqueda y validacion 
         Repetir
             Escribir 'Digite el codigo del prestamo que desea devolver:'
             Leer codigo
@@ -267,7 +271,7 @@ SubProceso RegistrarDevolucion(cantidad_devoluciones Por Referencia, multas_gene
             Escribir 'Devolucion a tiempo, no tiene multa.'
         FinSi
 		
-        //- Totales actualizados
+        //- Totales 
         Escribir 'Total acumulado de multas: ', multas_generadas
         Escribir 'Total de devoluciones: ', cantidad_devoluciones
         Esperar Tecla
@@ -275,7 +279,8 @@ SubProceso RegistrarDevolucion(cantidad_devoluciones Por Referencia, multas_gene
 FinSubProceso
 
 
-//- SubProceso para generar reportes
+//- SubProceso 3: Reportes
+//- Su funcion es: Verificar y corroborar los reportes asignados
 SubProceso GenerarReporte(cantidad_prestamos, cantidad_devoluciones, multas_generadas)
     Definir op_reporte Como Entero
     Definir promedio_multas Como Real
@@ -292,7 +297,7 @@ SubProceso GenerarReporte(cantidad_prestamos, cantidad_devoluciones, multas_gene
         Escribir 'Seleccione una opcion:'
         Leer op_reporte
 		
-        //- Seleccion del reporte solicitado
+        //- Seleccion del reporte 
         Segun op_reporte Hacer
             1:
                 Escribir 'Total de prestamos: ', cantidad_prestamos
@@ -304,7 +309,7 @@ SubProceso GenerarReporte(cantidad_prestamos, cantidad_devoluciones, multas_gene
                 Escribir 'Total acumulado de multas: ', multas_generadas
                 Esperar Tecla
             4:
-                //- Presentacion del reporte general
+                //- Presentacion del reporte 
                 Escribir '......... REPORTE GENERAL .........'
                 Escribir 'Total de prestamos: ', cantidad_prestamos
                 Escribir 'Total de devoluciones: ', cantidad_devoluciones
