@@ -2,35 +2,30 @@
 //Esta prueba ejecuta la funcion de una biblioteca, pide, presta,devuelve y multa por libro sugerido
 
 Algoritmo Biblioteca_Sun
-//Definiciones del algoritmo
+//-Definiciones del algoritmo
 Definir cantidad_prestamos, cantidad_devoluciones, op_menu Como Entero
 Definir multas_generadas Como Real
 
-//Contadores y acumuladores
+//-Contadores y acumuladores
 cantidad_prestamos <- 0
 cantidad_devoluciones <- 0
 multas_generadas <- 0
 op_menu <- 0
 
-//Pantalla de bienvenida 
-Limpiar Pantalla
-Escribir '    ¡BIENVENIDO A BIBLIOTECA SUN!     '
-Escribir '......................................'
-Escribir 'Presione la tecla enter para continuar'
-Esperar Tecla
-
-//Ciclo y ejecucion
+//-Pantalla de bienvenida 
+//-Ciclo y ejecucion
 Mientras op_menu <> 4 Hacer
 	Limpiar Pantalla
-	Escribir '================================='
-	Escribir '          Menu principal         '
-	Escribir '================================='
+	Escribir '.................................'
+	Escribir '   Bienvenido a Biblioteca Sun   '
+	Escribir '.................................'
+	Escribir '   MENÚ PRINCIPAL:     '
 	Escribir '1. Registrar prestamo'
 	Escribir '2. Registrar devolucion'
 	Escribir '3. Reportes'
 	Escribir '4. Salir'
-	Escribir '5. Consultar reglas del prestamo'
 	Escribir 'Selecciona una opcion:'
+	Escribir 'Pili linda'
 	Leer op_menu
 	
 	Segun op_menu Hacer
