@@ -1,4 +1,4 @@
-Algoritmo Biblioteca_sun 
+Algoritmo Biblioteca_Sun 
 //-Definiciones del algoritmo
 	Definir cantidad_prestamos, cantidad_devoluciones, op_menu Como Entero
 	Definir multas_generadas Como Real
@@ -37,7 +37,7 @@ Mientras op_menu <> 5 Hacer
 			Escribir 'Total de prestamos: ', cantidad_prestamos
 			Escribir 'Total de devoluciones: ', cantidad_devoluciones
 			Escribir 'Total de multas generadas: ', multas_generadas
-			Escribir 'Gracias por utilizar Biblioteca Sun."
+			Escribir 'Gracias por utilizar Biblioteca Sun.'
 			Esperar Tecla
 		5:
 			Limpiar Pantalla
@@ -46,6 +46,7 @@ Mientras op_menu <> 5 Hacer
 			Escribir '1. Se pueden seleccionar de 1 a 3 libros.'
 			Escribir '2. Los dias de prestamo deben ser mayores que cero.'
 			Escribir '3. Las multas dependen de los dias de atraso.'
+			Esperar Tecla
 		De Otro Modo:
 			Escribir 'Error: Seleccione una opcion del 1 al 5'
 			Esperar Tecla
@@ -57,20 +58,20 @@ FinAlgoritmo
 
 //-Funcion 1: Inicio numerico
 //-Su funcion: Leer el dato como texto y lo convierta
-Funcion punto_num <- leer_total (mensaje)
+Funcion punto_num <- leer_entero(mensaje)
 	Definir punto_num Como Entero
 	Definir entrada Como Caracter
 	
 	Repetir
 		Escribir mensaje
 		Leer entrada
-		Si punto_num(entrada) Entonces
+		Si es_num(entrada) Entonces
 			punto_num <- ConvertirANumero(entrada)
 		SiNo
 			punto_num <- -1
 			Escribir 'Denegado: Digite solamente numeros completos'
 		Fin Si
-	Hasta Que punto_num(entrada)
+	Hasta Que es_num(entrada)
 	
 Fin Funcion
 
@@ -107,37 +108,45 @@ Funcion resultado <- es_num (texto)
 Fin Funcion
 
 //-Funcion 3: Validar los dias del prestamo
-//Su funcion: Recibe la cantidad de dias, verifica que sea mayor que 0 y devuelve los dias validos
-Funcion dias_validos <- validar_dias 
-Definir dias_validos Como Entero	
+//Su funcion: Valida la cantidad de dias, verifica que sea mayor que 0 y devuelve los dias validos
 
-Repetir
-	dias_validos <- leer_entero('Ingrese la cantidad de dias: ')
+Funcion dias_validos <- validar_dias
+    Definir dias_validos Como Entero
 	
-	Si dias_validos <= 0 Entonces
-		Escribir 'Denegado: Los dias deben ser mayor a 0'
-	Fin Si
-	
-Hasta Que dias_validos > 0
-Fin Funcion
+    Repetir
+        dias_validos <- leer_entero("Ingrese la cantidad de dias:")
+		
+        Si dias_validos <= 0 Entonces
+            Escribir "Error: Los dias deben ser mayores que cero."
+        FinSi
+    Hasta Que dias_validos > 0
+FinFuncion
 
 //-Funcion 4: Calcular multa
 //-Su funcion es: Calcular la multa de los dias atrasados
-Funcion multa_calculada <- calcular_multa (dias)
-	Definir multa_calculada
-	Si dias <= 0  Entonces
+Funcion multa_calculada <- calcular_multa(dias)
+	Definir multa_calculada, pago Como Real
+	Definir trayecto Como Entero
+	Si  dias <= 0  Entonces
 		multa_calculada <- 0
 	SiNo
-		Si dias <= 5 Entonces
-			multa_calculada <- dias * 500
+		Si  dias <= 5 Entonces
+			trayecto <- 1
 		SiNo
 			Si dias <= 10 Entonces
-				multa_calculada <- dias * 750
+				trayecto <- 2
 			SiNo
-				multa_calculada <- dias * 1000
-			Fin Si
-		Fin Si
-	Fin Si
+				trayecto <- 3
+			FinSi
+			Segun trayecto Hacer
+				1:
+					pago <- 500
+				2:
+					pago <- 750
+				3:
+					pago <- 1000
+			Fin Segun
+			multa_calculada <- dias * pago
 Fin Funcion
 
 //- Subproceso 1: Registra prestamo
@@ -156,7 +165,7 @@ SubProceso registrar_prestamo(cantidad_prestamos Por referencia)
 		Leer nombre_usuario
 		
 		Si nombre_usuario = '' Entonces
-			Escribir 'Denegado: El nombre no debe estar vacio'
+			Escribir 'Denegado: El nombre debe llevar letras o elementos validos'
 		Fin Si
 		
 	Hasta Que nombre_usuario <> ''
@@ -190,7 +199,7 @@ SubProceso registrar_prestamo(cantidad_prestamos Por referencia)
 	//-Elegir libros
 	Para i <- 1 Hasta cantidad_libros Hacer
 		Limpiar Pantalla
-		Escribir 'Libro ', i, 'de ', cantidad_libros
+		Escribir 'Libro ', i, ' de ', cantidad_libros
 		Escribir '1. La hipotesis del amor '
 		Escribir '2. Enola Holmes y el carruaje negro'
 		Escribir '3. Crimen y castigo'
@@ -200,14 +209,14 @@ SubProceso registrar_prestamo(cantidad_prestamos Por referencia)
 		
 		//-Verificando seleccion
 		Repetir
-			libro_escogido <- leer_entero('Digita el numero del libro: ')
+			libro_elegido <- leer_entero('Digita el numero del libro: ')
 			Si libro_elegido < 1 O libro_elegido > 6 Entonces
 				Escribir 'Denegado: Seleccione un libro del 1 al 6: '
 			Fin Si
 		Hasta Que libro_elegido >= 1 Y libro_elegido <= 6
 		
 		//-Definiendo titulo
-		Segun libro_escogido Hacer
+		Segun libro_elegido Hacer
 			1:
                 nombre_libro <- 'La hipotesis del amor'
 				
@@ -228,7 +237,11 @@ SubProceso registrar_prestamo(cantidad_prestamos Por referencia)
 		Fin Segun
 		
 		//-Añadiendo titulo
-		libros_seleccionados <- libros_seleccionados + nombre_libro + ', '
+		Si i = 1 Entonces
+			libros_seleccionados <- nombre_libro
+		SiNo
+			libros_seleccionados <- libros_seleccionados + ', ' + nombre_libro
+		Fin Si
 		
 	Fin Para
 	
@@ -255,7 +268,7 @@ FinSubProceso
 SubProceso registrar_devolucion(cantidad_devoluciones Por Referencia, multas_generadas Por Referencia)
 //Diseñando definirs	
 	Definir nombre_usuario Como Caracter
-	Definir multa Como Logico
+	Definir multa Como Real
 	Definir codigo_prestamo, op_atraso, dias_atraso Como Entero
 	Limpiar Pantalla
 	Escribir '...... REGISTRO DE DEVOLUCION ......'
@@ -266,7 +279,7 @@ SubProceso registrar_devolucion(cantidad_devoluciones Por Referencia, multas_gen
 		Escribir 'Digite el nombre del usuario: '
 		Leer nombre_usuario
 		Si nombre_usuario = '' Entonces
-			Escribir 'Denegado: El nombre no puede estar vacio'
+			Escribir 'Denegado: El nombre debe llevar letras o elementos validos'
 		Fin Si
 	Hasta Que nombre_usuario <> ''
 	
@@ -362,7 +375,7 @@ Repetir
 			Escribir '....................................'
 			Escribir 'Total de prestamos: ', cantidad_prestamos
 			Escribir 'Total de devoluciones: ', cantidad_devoluciones
-			Escribir 'Total acumulado de multas: ', multas_generales
+			Escribir 'Total acumulado de multas: ', multas_generadas
 			
 			Si cantidad_devoluciones > 0 Entonces
 				promedio_multas <- multas_generadas / cantidad_devoluciones
