@@ -300,9 +300,9 @@ SubProceso registrar_devolucion(cantidad_devoluciones Por Referencia, multas_gen
 	
 	//-Verificar multa
 	multa <- calcular_multa(dias_atraso)
-	//Acumular multas
+	//-Acumular multas
 	multas_generadas <- multas_generadas + multa
-	//Actualizar devoluciones
+	//-Actualizar devoluciones
 	cantidad_devoluciones <- cantidad_devoluciones + 1
 	
 	//Mostrar comprobante
@@ -325,3 +325,61 @@ SubProceso registrar_devolucion(cantidad_devoluciones Por Referencia, multas_gen
 	Esperar Tecla
 FinSubProceso
 
+//-SubProceso 3: Generando reportes
+SubProceso generar_reporte(cantidad_prestamos, cantidad_devoluciones, multas_generadas)
+Definir op_reporte	Como Entero
+Definir promedio_multas Como Real	
+	
+Repetir
+	Limpiar Pantalla
+	Escribir '......... GENERAR REPORTES .........'
+	Escribir '....................................'
+	Escribir '1. Cantidad de prestamos'
+	Escribir '2. Cantidad de devoluciones'
+	Escribir '3. Total de multas'
+	Escribir '4. Reporte general'
+	Escribir '5. Volver al menu principal'
+	Escribir '....................................'
+	op_reporte <- leer_entero('Seleccione una opcion:')
+	
+	Segun op_reporte Hacer
+		1:
+			Escribir 'Total de prestamos: ', cantidad_prestamos
+			Esperar Tecla
+		2:
+			Escribir 'Total de devoluciones: ', cantidad_devoluciones
+			Esperar Tecla
+		3:
+			Si multas_generadas = 0 Entonces
+				Escribir 'No se han generado multas'
+			SiNo
+				Escribir 'Total acumulado de multas: ', multas_generadas
+			Fin Si
+			Esperar Tecla
+		4:
+			Limpiar Pantalla
+			Escribir '......... REPORTE  GENERAL .........'
+			Escribir '....................................'
+			Escribir 'Total de prestamos: ', cantidad_prestamos
+			Escribir 'Total de devoluciones: ', cantidad_devoluciones
+			Escribir 'Total acumulado de multas: ', multas_generales
+			
+			Si cantidad_devoluciones > 0 Entonces
+				promedio_multas <- multas_generadas / cantidad_devoluciones
+				Escribir 'Calculo de multa por devolucion: ', promedio_multas
+			SiNo
+				Escribir 'Calculo de multa: No disponible'
+				Escribir 'No se han detectado registro de devoluciones'
+			Fin Si
+			Esperar Tecla
+		5:
+			Escribir 'Regresando al menu principal'
+			
+		De Otro Modo:
+			Escribir 'Denegado: seleccione una opcion del 1 al 5.'
+			Esperar Tecla
+	Fin Segun
+	
+Hasta Que op_reporte = 5
+		
+FinSubProceso
