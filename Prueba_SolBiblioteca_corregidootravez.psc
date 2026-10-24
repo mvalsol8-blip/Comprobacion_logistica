@@ -115,13 +115,84 @@ Repetir
 	dias_validos <- leer_entero('Ingrese la cantidad de dias: ')
 	
 	Si dias_validos <= 0 Entonces
-		acciones_por_verdadero
-	SiNo
-		acciones_por_falso
+		Escribir 'Denegado: Los dias deben ser mayor a 0'
 	Fin Si
 	
-Hasta Que expresion_logica
-
+Hasta Que dias_validos > 0
 Fin Funcion
 
-FinAlgoritmo
+//-Funcion 4: Calcular multa
+//-Su funcion es: Calcular la multa de los dias atrasados
+Funcion multa_calculada <- calcular_multa (dias)
+	Definir multa_calculada
+	Si dias <= 0  Entonces
+		multa_calculada <- 0
+	SiNo
+		Si dias <= 5 Entonces
+			multa_calculada <- dias * 500
+		SiNo
+			Si dias <= 10 Entonces
+				multa_calculada <- dias * 750
+			SiNo
+				multa_calculada <- dias * 1000
+			Fin Si
+		Fin Si
+	Fin Si
+Fin Funcion
+
+//- Subproceso 1: Registra prestamo
+SubProceso registrar_prestamo(cantidad_prestamos Por referencia)
+	//- Defino las variables 
+	Definir nombre_usuario, nombre_libro, libros_seleccionados Como Caracter
+	Definir codigo_prestamo, dias_prestamo, cantidad_libros, libro_elegido, i Como Entero
+	
+	Limpiar Pantalla
+	Escribir '...... Registrar prestamo ......'
+	Escribir '................................'
+	
+	Repetir
+		Escribir 'Ingrese el nombre del usuario: '
+		Leer nombre_usuario
+		
+		Si nombre_usuario = '' Entonces
+			Escribir 'Denegado: El nombre no debe estar vacio'
+		Fin Si
+		
+	Hasta Que nombre_usuario <> ''
+	
+	Repetir
+		codigo_prestamo <- leer_entero ('Ingrese el codigo del prestamo: ')
+		
+		Si codigo_prestamo <= 0 Entonces
+			Escribir 'Denegado: El codigo debe ser mayor que cero'
+		Fin Si
+		
+	Hasta Que codigo_prestamo > 0
+	
+	dias_prestamo <- validar_dias
+	
+	Repetir
+		cantidad_libros <- leer_entero('Cantidad de libros que desea llevar (1 a 3): ')
+		
+		Si cantidad_libros < 1 O cantidad_libros > 3 Entonces
+			Escribir 'Denegado: Solo puedes escoger de 1 a 3 libros'
+		Fin Si
+		
+	Hasta Que cantidad_libros >= 1 Y cantidad_libros <= 3
+	
+	libros_seleccionados <- ''
+	
+	Para i <- 1 Hasta cantidad_libros Hacer
+		Limpiar Pantalla
+		Escribir lista_de_expresiones
+		Escribir lista_de_expresiones
+		Escribir lista_de_expresiones
+		Escribir lista_de_expresiones
+		Escribir lista_de_expresiones
+		Escribir lista_de_expresiones
+		Escribir lista_de_expresiones
+		
+	Fin Para
+	
+	 FinSubProceso
+	
