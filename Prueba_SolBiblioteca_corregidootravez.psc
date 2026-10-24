@@ -1,50 +1,79 @@
 Algoritmo Biblioteca_Sun 
-//-Definiciones del algoritmo
-	Definir cantidad_prestamos, cantidad_devoluciones, op_menu Como Entero
+	//-Definiciones del algoritmo
+	Definir cantidad_prestamos, cantidad_devoluciones, cantidad_usuarios, op_menu, i, j Como Entero
 	Definir multas_generadas Como Real
 	
-//-Contadores y acumuladores
-cantidad_prestamos <- 0
-cantidad_devoluciones <- 0
-multas_generadas <- 0
-op_menu <- 0	
-
-//-Pantalla de bienvenida, ciclo y ejecucion
-Mientras op_menu <> 4 Hacer
-	Limpiar Pantalla
-	Escribir '.................................'
-	Escribir '   Bienvenido a Biblioteca Sun   '
-	Escribir '.................................'
-	Escribir '   MENÚ PRINCIPAL:     '
-	Escribir '1. Registrar prestamo'
-	Escribir '2. Registrar devolucion'
-	Escribir '3. Reportes'
-	Escribir '4. Salir'
-	op_menu <- leer_entero('Seleccione una opcion: ')
+	//-Contadores y acumuladores
+	cantidad_prestamos <- 0
+	cantidad_devoluciones <- 0
+	multas_generadas <- 0
+	op_menu <- 0	
 	
-	Segun op_menu Hacer
-		1:
-			registrar_prestamo(cantidad_prestamos)
-		2:
-			registrar_devolucion(cantidad_devoluciones, multas_generadas)
-		3:
-			generar_reporte(cantidad_prestamos, cantidad_devoluciones, multas_generadas)
-		4:
-			Limpiar Pantalla
-			Escribir '...........................'
-			Escribir '...... REPORTE FINAL ......'
-			Escribir 'Total de prestamos: ', cantidad_prestamos
-			Escribir 'Total de devoluciones: ', cantidad_devoluciones
-			Escribir 'Total de multas generadas: ', multas_generadas
-			Escribir 'Gracias por utilizar Biblioteca Sun.'
-			Esperar Tecla
-		De Otro Modo:
-			Escribir 'Denegado: Seleccione una opcion del 1 al 4'
-			Esperar Tecla
-	FinSegun
-FinMientras
+	//-Configuracion en registro
+	Definir usuarios, prest_usuario, prest_libros Como Caracter
+	Definir prest_codigo, prest_dias, prest_cant, libro Como Entero
+	Definir prest_devuelto Como Logico
+	Dimension usuarios[101]
+	Dimension prest_codigo[101], prest_usuario[101], prest_dias[101], prest_cant[101], prest_libros[101], prest_devuelto[101]
+	Dimension libro[101, 3]
+	
+	//-Contadores y acumuladores x2
+	cantidad_prestamos <- 0
+	cantidad_devoluciones <- 0
+	cantidad_usuarios <- 0
+	multas_generadas <- 0
+	op_menu <- 0
+	
+	//-Usuario en el inicio
+	Para i <- 1 Hasta 101 Hacer
+		usuarios[i] <- ''
+		prest_usuario[i] <- ''
+		prest_libros[i] <- ''
+		prest_codigo[i] <- 0
+		prest_dias[i] <- 0
+		prest_cant[i] <- 0
+		prest_devuelto[i] <- Falso
+		Para j <- 1 Hasta 3 Hacer
+			libro[i, j] <- 0
+		Fin Para
+	Fin Para
+	
+	//-Pantalla de bienvenida, ciclo y ejecucion
+	Mientras op_menu <> 4 Hacer
+		Limpiar Pantalla
+		Escribir '.................................'
+		Escribir '   Bienvenido a Biblioteca Sun   '
+		Escribir '.................................'
+		Escribir '   MENÚ PRINCIPAL:     '
+		Escribir '1. Registrar prestamo'
+		Escribir '2. Registrar devolucion'
+		Escribir '3. Reportes'
+		Escribir '4. Salir'
+		op_menu <- leer_entero('Seleccione una opcion: ')
+		
+		Segun op_menu Hacer
+			1:
+				registrar_prestamo(cantidad_prestamos, cantidad_usuarios, usuarios, prest_codigo, prest_usuario, prest_dias, prest_cant, prest_libros, libros, prest_devuelto)
+			2:
+				registrar_devolucion(cantidad_devoluciones, multas_generadas, cantidad_prestamos, prest_codigo, prest_usuario, prest_dias, prest_cant, prest_libros, libros, prest_devuelto)
+			3:
+				generar_reporte(cantidad_prestamos, cantidad_devoluciones, multas_generadas)
+			4:
+				Limpiar Pantalla
+				Escribir '...........................'
+				Escribir '...... REPORTE FINAL ......'
+				Escribir 'Total de prestamos: ', cantidad_prestamos
+				Escribir 'Total de devoluciones: ', cantidad_devoluciones
+				Escribir 'Total de multas generadas: ', multas_generadas
+				Escribir 'Gracias por utilizar Biblioteca Sun.'
+				Esperar Tecla
+			De Otro Modo:
+				Escribir 'Denegado: Seleccione una opcion del 1 al 4'
+				Esperar Tecla
+		FinSegun
+	FinMientras
 FinAlgoritmo	
-	
+
 //-Inicio de funciones
 
 //-Funcion 1: Inicio numerico
@@ -110,17 +139,10 @@ Fin Funcion
 //-Funcion 3: Validar los dias del prestamo
 //Su funcion: Valida la cantidad de dias, verifica que sea mayor que 0 y devuelve los dias validos
 
-Funcion dias_validos <- validar_dias
-    Definir dias_validos Como Entero
-	
-    Repetir
-        dias_validos <- leer_entero("Ingrese la cantidad de dias:")
-		
-        Si dias_validos <= 0 Entonces
-            Escribir "Denegado: Los dias deben ser mayores que cero."
-        FinSi
-    Hasta Que dias_validos > 0
-FinFuncion
+Funcion dias_validos <- validar_dias(mensaje)
+	Definir dias_validos Como Entero
+	dias_validos <- leer_entero(mensaje)
+Fin Funcion
 
 //-Funcion 4: Calcular multa
 //-Su funcion es: Calcular la multa de los dias atrasados
@@ -152,6 +174,143 @@ Funcion multa_calculada <- calcular_multa(dias)
         multa_calculada <- dias * pago
     FinSi
 Fin Funcion
+
+//-Funcion 5: Texto en el programa
+//-Su funicion es: Comprueba, lee, busca,cuenta, posiciona, revisa, da titulo, al usuario, prestamo y libro
+
+//-Funcion: Comprobar que el nombre sea texto (solo letras y espacios)
+Funcion resultado <- es_nombre(texto)
+	Definir resultado, encontrado, hay_letra Como Logico
+	Definir permitidos, caracter, minuscula Como Caracter
+	Definir i, j Como Entero
+	permitidos <- 'abcdefghijklmnñopqrstuvwxyzáéíóúü'
+	minuscula <- Minusculas(texto)
+	resultado <- Verdadero
+	hay_letra <- Falso
+	
+	Si Longitud(texto) = 0 Entonces
+		resultado <- Falso
+	SiNo
+		Para i <- 0 Hasta Longitud(minuscula) - 1 Hacer
+			caracter <- Subcadena(minuscula, i, i)
+			Si caracter <> ' ' Entonces
+				encontrado <- Falso
+				Para j <- 0 Hasta Longitud(permitidos) - 1 Hacer
+					Si caracter = Subcadena(permitidos, j, j) Entonces
+						encontrado <- Verdadero
+					FinSi
+				Fin Para
+				Si encontrado Entonces
+					hay_letra <- Verdadero
+				SiNo
+					resultado <- Falso
+				FinSi
+			FinSi
+		Fin Para
+		Si hay_letra = Falso Entonces
+			resultado <- Falso
+		FinSi
+	Fin Si
+Fin Funcion
+
+//-Funcion: Leer el nombre del usuario (solo letras). Devuelve '0' si quiere volver
+Funcion nombre <- leer_nombre(mensaje)
+	Definir nombre Como Caracter
+	Definir valido Como Logico
+	
+	Repetir
+		Escribir mensaje, ' (0 para volver al menu)'
+		Leer nombre
+		Si nombre = '0' Entonces
+			valido <- Verdadero
+		SiNo
+			valido <- es_nombre(nombre)
+			Si valido = Falso Entonces
+				Escribir 'Denegado: El nombre solo puede llevar letras (sin numeros ni simbolos)'
+			FinSi
+		FinSi
+	Hasta Que valido
+Fin Funcion
+
+//-Funcion: Buscar un usuario por nombre (devuelve la posicion o 0 si no existe)
+Funcion pos <- buscar_usuario(nombre, lista_usuarios, total_usuarios)
+	Definir pos, i Como Entero
+	pos <- 0
+	Para i <- 1 Hasta total_usuarios Hacer
+		Si Minusculas(lista_usuarios[i]) = Minusculas(nombre) Entonces
+			pos <- i
+		FinSi
+	Fin Para
+Fin Funcion
+
+//-Funcion: Buscar un prestamo por codigo (devuelve la posicion o 0)
+Funcion pos <- buscar_prestamo(codigo, codigos_prestamos, total_prestamos)
+	Definir pos, i Como Entero
+	pos <- 0
+	Para i <- 1 Hasta total_prestamos Hacer
+		Si codigos_prestamos[i] = codigo Entonces
+			pos <- i
+		FinSi
+	Fin Para
+Fin Funcion
+
+//-Funcion: Cuenta los prestamos sin devolver de un usuario
+Funcion total <- contar_pendientes(nombre, nombres_prestatarios, estados_devolucion, total_prestamos)
+	Definir total, i Como Entero
+	total <- 0
+	Para i <- 1 Hasta total_prestamos Hacer
+		Si Minusculas(nombres_prestatarios[i]) = Minusculas(nombre) Y estados_devolucion[i] = Falso Entonces
+			total <- total + 1
+		FinSi
+	Fin Para
+Fin Funcion
+
+//-Funcion: Posicion de un prestamo sin devolver de un usuario
+Funcion pos <- buscar_pendiente(nombre, nombres_prestatarios, estados_devolucion, total_prestamos)
+	Definir pos, i Como Entero
+	pos <- 0
+	Para i <- 1 Hasta total_prestamos Hacer
+		Si Minusculas(nombres_prestatarios[i]) = Minusculas(nombre) Y estados_devolucion[i] = Falso Entonces
+			pos <- i
+		FinSi
+	Fin Para
+Fin Funcion
+
+//-Funcion: Revisa si el usuario ya tiene prestado ese libro sin devolver
+//-Devuelve la posicion del prestamo donde lo tiene, o 0 si no lo tiene
+Funcion pos <- prestamo_con_libro(nombre, libro, nombres_prestatarios, libros_prestados, cantidades_libros, estados_devolucion, total_prestamos)
+	Definir pos, i, k Como Entero
+	pos <- 0
+	Para i <- 1 Hasta total_prestamos Hacer
+		Si Minusculas(nombres_prestatarios[i]) = Minusculas(nombre) Y estados_devolucion[i] = Falso Entonces
+			Para k <- 1 Hasta cantidades_libros[i] Hacer
+				Si libros_prestados[i, k] = libro Entonces
+					pos <- i
+				FinSi
+			Fin Para
+		FinSi
+	Fin Para
+Fin Funcion
+
+//-Funcion: Titulo del libro segun su numero
+Funcion titulo <- titulo_libro(numero)
+	Definir titulo Como Caracter
+	Segun numero Hacer
+		1:
+			titulo <- 'La hipotesis del amor'
+		2:
+			titulo <- 'Enola Holmes y el carruaje negro'
+		3:
+			titulo <- 'Crimen y castigo'
+		4:
+			titulo <- 'Orgullo y prejuicio'
+		5:
+			titulo <- 'Harry Potter y el prisionero de Azkaban'
+		6:
+			titulo <- 'Los juegos del hambre'
+	Fin Segun
+Fin Funcion
+
 
 //- Subproceso 1: Registra prestamo
 SubProceso registrar_prestamo(cantidad_prestamos Por referencia)
@@ -270,7 +429,7 @@ FinSubProceso
 
 //-Subproceso 2: Registrar devolucion
 SubProceso registrar_devolucion(cantidad_devoluciones Por Referencia, multas_generadas Por Referencia)
-//Diseñando definirs	
+	//Diseñando definirs	
 	Definir nombre_usuario Como Caracter
 	Definir multa Como Real
 	Definir codigo_prestamo, op_atraso, dias_atraso Como Entero
@@ -344,59 +503,59 @@ FinSubProceso
 
 //-SubProceso 3: Generando reportes
 SubProceso generar_reporte(cantidad_prestamos, cantidad_devoluciones, multas_generadas)
-Definir op_reporte	Como Entero
-Definir promedio_multas Como Real	
+	Definir op_reporte	Como Entero
+	Definir promedio_multas Como Real	
 	
-Repetir
-	Limpiar Pantalla
-	Escribir '......... GENERAR REPORTES .........'
-	Escribir '....................................'
-	Escribir '1. Cantidad de prestamos'
-	Escribir '2. Cantidad de devoluciones'
-	Escribir '3. Total de multas'
-	Escribir '4. Reporte general'
-	Escribir '5. Volver al menu principal'
-	Escribir '....................................'
-	op_reporte <- leer_entero('Seleccione una opcion:')
-	
-	Segun op_reporte Hacer
-		1:
-			Escribir 'Total de prestamos: ', cantidad_prestamos
-			Esperar Tecla
-		2:
-			Escribir 'Total de devoluciones: ', cantidad_devoluciones
-			Esperar Tecla
-		3:
-			Si multas_generadas = 0 Entonces
-				Escribir 'No se han generado multas'
-			SiNo
-				Escribir 'Total acumulado de multas: ', multas_generadas
-			Fin Si
-			Esperar Tecla
-		4:
-			Limpiar Pantalla
-			Escribir '......... REPORTE  GENERAL .........'
-			Escribir '....................................'
-			Escribir 'Total de prestamos: ', cantidad_prestamos
-			Escribir 'Total de devoluciones: ', cantidad_devoluciones
-			Escribir 'Total acumulado de multas: ', multas_generadas
-			
-			Si cantidad_devoluciones > 0 Entonces
-				promedio_multas <- multas_generadas / cantidad_devoluciones
-				Escribir 'Calculo de multa por devolucion: ', promedio_multas
-			SiNo
-				Escribir 'Calculo de multa: No disponible'
-				Escribir 'No se han detectado registro de devoluciones'
-			Fin Si
-			Esperar Tecla
-		5:
-			Escribir 'Regresando al menu principal'
-			
-		De Otro Modo:
-			Escribir 'Denegado: seleccione una opcion del 1 al 5.'
-			Esperar Tecla
-	Fin Segun
-	
-Hasta Que op_reporte = 5
+	Repetir
+		Limpiar Pantalla
+		Escribir '......... GENERAR REPORTES .........'
+		Escribir '....................................'
+		Escribir '1. Cantidad de prestamos'
+		Escribir '2. Cantidad de devoluciones'
+		Escribir '3. Total de multas'
+		Escribir '4. Reporte general'
+		Escribir '5. Volver al menu principal'
+		Escribir '....................................'
+		op_reporte <- leer_entero('Seleccione una opcion:')
 		
+		Segun op_reporte Hacer
+			1:
+				Escribir 'Total de prestamos: ', cantidad_prestamos
+				Esperar Tecla
+			2:
+				Escribir 'Total de devoluciones: ', cantidad_devoluciones
+				Esperar Tecla
+			3:
+				Si multas_generadas = 0 Entonces
+					Escribir 'No se han generado multas'
+				SiNo
+					Escribir 'Total acumulado de multas: ', multas_generadas
+				Fin Si
+				Esperar Tecla
+			4:
+				Limpiar Pantalla
+				Escribir '......... REPORTE  GENERAL .........'
+				Escribir '....................................'
+				Escribir 'Total de prestamos: ', cantidad_prestamos
+				Escribir 'Total de devoluciones: ', cantidad_devoluciones
+				Escribir 'Total acumulado de multas: ', multas_generadas
+				
+				Si cantidad_devoluciones > 0 Entonces
+					promedio_multas <- multas_generadas / cantidad_devoluciones
+					Escribir 'Calculo de multa por devolucion: ', promedio_multas
+				SiNo
+					Escribir 'Calculo de multa: No disponible'
+					Escribir 'No se han detectado registro de devoluciones'
+				Fin Si
+				Esperar Tecla
+			5:
+				Escribir 'Regresando al menu principal'
+				
+			De Otro Modo:
+				Escribir 'Denegado: seleccione una opcion del 1 al 5.'
+				Esperar Tecla
+		Fin Segun
+		
+	Hasta Que op_reporte = 5
+	
 FinSubProceso
