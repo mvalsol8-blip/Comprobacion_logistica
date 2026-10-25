@@ -16,7 +16,7 @@ Algoritmo Biblioteca_Sun
     cantidad_devoluciones <- 0
     multas_generadas <- 0
     op_menu <- 0
-    inventario <- 30   //- Inventario: total de libros disponibles en la biblioteca
+    inventario <- 6   //- Inventario: total de libros disponibles en la biblioteca
 	
     //- Comienzo en los arreglos
     Para i <- 1 Hasta 100 Hacer
@@ -66,32 +66,44 @@ Algoritmo Biblioteca_Sun
     FinMientras
 FinAlgoritmo
 
-
+//- Funcion auxiliar: detecta si las cadenas empiezan en 0 o en 1
+Funcion base <- BaseCadenas(muestra)
+    Definir base Como Entero
+    Si Subcadena(muestra, 0, 0) = 'a' Entonces
+        base <- 0
+    Sino
+        base <- 1
+    FinSi
+FinFuncion
 
 //- FUNCION 0: VALIDACION
 //- Su funcion es: Verificar que el texto tenga solo letras y espacios
 Funcion resultado <- EsSoloLetras(texto)
     Definir resultado Como Logico
     Definir permitidos, caracter Como Caracter
-    Definir i, j, cant_letras Como Entero
+    Definir i, j, base, cant_letras Como Entero
     Definir es_valido Como Logico
 	
-    permitidos <- 'abcdefghijklmnopqrstuvwxyzáéíóúüñ'
+    base <- BaseCadenas('abc')
+	permitidos <- 'abcdefghijklmnopqrstuvwxyzáéíóúüñ'
     resultado <- Verdadero
     cant_letras <- 0
 	
     Si Longitud(texto) = 0 Entonces
         resultado <- Falso
     Sino
-        Para i <- 0 Hasta Longitud(texto) - 1 Hacer
+        Para i <- base Hasta base + Longitud(texto) - 1 Hacer
             caracter <- Minusculas(Subcadena(texto, i, i))
+			
             Si caracter <> ' ' Entonces
                 es_valido <- Falso
-                Para j <- 0 Hasta Longitud(permitidos) - 1 Hacer
+				
+				Para j <- base Hasta base + Longitud(permitidos) - 1 Hacer
                     Si Subcadena(permitidos, j, j) = caracter Entonces
                         es_valido <- Verdadero
                     FinSi
                 FinPara
+				
                 Si es_valido Entonces
                     cant_letras <- cant_letras + 1
                 Sino
@@ -99,6 +111,7 @@ Funcion resultado <- EsSoloLetras(texto)
                 FinSi
             FinSi
         FinPara
+		
         //- Un nombre que no tenga letras no es valido
         Si cant_letras = 0 Entonces
             resultado <- Falso
@@ -111,23 +124,26 @@ FinFuncion
 Funcion resultado <- es_entero(texto)
     Definir resultado Como Logico
     Definir digitos, caracter Como Caracter
-    Definir i, j Como Entero
+    Definir i, j, base Como Entero
     Definir es_digito Como Logico
 	
-    digitos <- '0123456789'
+    base <- BaseCadenas('abc')
+	digitos <- '0123456789'
     resultado <- Verdadero
 	
     Si Longitud(texto) = 0 O Longitud(texto) > 9 Entonces
         resultado <- Falso
     Sino
-        Para i <- 0 Hasta Longitud(texto) - 1 Hacer
+        Para i <- base Hasta base + Longitud(texto) - 1 Hacer
             caracter <- Subcadena(texto, i, i)
             es_digito <- Falso
-            Para j <- 0 Hasta 9 Hacer
+			
+            Para j <- base Hasta base + 9 Hacer
                 Si Subcadena(digitos, j, j) = caracter Entonces
                     es_digito <- Verdadero
                 FinSi
             FinPara
+			
             Si NO es_digito Entonces
                 resultado <- Falso
             FinSi
@@ -162,6 +178,7 @@ Funcion numero <- leer_entero(mensaje)
         Escribir mensaje
         Leer oracion
         valido <- es_entero(oracion)
+		
         Si NO valido Entonces
             Escribir 'Denegado: solo se permiten numeros enteros (sin letras ni simbolos).'
         FinSi
@@ -208,8 +225,6 @@ Funcion resultado <- escoger(opcion1, opcion2)
     resultado <- (opinion = 1)
 FinFuncion
 
-
-
 //- Funcion 7: Multas por dias de atraso
 //- Su funcion es: Calcular las multas
 Funcion multa_calculada <- CalcularMulta(dias_atraso)
@@ -244,11 +259,33 @@ Funcion multa_calculada <- CalcularMulta(dias_atraso)
     FinSi
 FinFuncion
 
+//-Funcion 8_Lista de libros
+//-Su funcion es: Luego de crear el usuario y escoger cuantos libros escoger lo mas gustan
+Funcion nombre <- titulo_libro(numero)
+    Definir nombre Como Caracter
+    Segun numero Hacer
+        1:
+            nombre <- 'Harry Potter y las Reliquias de la muerte'
+        2:
+            nombre <- 'Los juegos del hambre'
+        3:
+            nombre <- 'Orgullo y Prejucio'
+        4:
+            nombre <- 'Alas de sangre'
+        5:
+            nombre <- 'La biblioteca de la media noche'
+        6:
+            nombre <- 'Dracula'
+    FinSegun
+FinFuncion
 
 //- SubProceso 1: Registrar prestamo
 SubProceso RegistrarPrestamo(cantidad_prestamos Por Referencia, inventario Por Referencia, prest_usuario Por Referencia, prest_codigo Por Referencia, prest_dias Por Referencia, prest_cant Por Referencia, prest_devuelto Por Referencia)
-    Definir usuario Como Caracter
-    Definir codigo, dias, cantidad_libros, i, prestamos_usuario Como Entero
+    Definir usuario, libros_seleccionados Como Caracter
+    Definir codigo, dias, cantidad_libros, i, j, k, prestamos_usuario, libro_elegido Como Entero
+    Definir valido Como Logico
+    Definir elegido Como Logico
+    Dimension elegido[6]
 	
     Limpiar Pantalla
     Escribir '...... REGISTRAR PRESTAMO ......'
@@ -268,9 +305,9 @@ SubProceso RegistrarPrestamo(cantidad_prestamos Por Referencia, inventario Por R
                 //- Nombre del usuario (solo letras)
                 usuario <- leer_nombre('Ingrese el nombre del usuario:')
 				
-                //- Si el usuario ya existe se busca y se usa el mismo, no se crea uno nuevo
+                //- Buscar si el usuario ya existe
                 prestamos_usuario <- 0
-                Para i <- 1 Hasta cantidad_prestamos Hacer
+                Para i <- 1 Hasta cantidad_prestamos Con Paso 1 Hacer
                     Si Minusculas(prest_usuario[i]) = Minusculas(usuario) Entonces
                         Si prestamos_usuario = 0 Entonces
                             usuario <- prest_usuario[i]
@@ -280,15 +317,13 @@ SubProceso RegistrarPrestamo(cantidad_prestamos Por Referencia, inventario Por R
                 FinPara
 				
                 Si prestamos_usuario > 0 Entonces
-                    Escribir 'Usuario ya registrado: ', usuario, ' (prestamos previos: ', prestamos_usuario, ').'
+                    Escribir 'Usuario ya registrado: ', usuario, ' (historial de prestamos: ', prestamos_usuario, ').'
                 Sino
                     Escribir 'Usuario nuevo: ', usuario
                 FinSi
 				
-                //- Codigo del libro/prestamo 
+                //- Codigo y dias
                 codigo <- leer_positivo('Ingrese el codigo del prestamo:')
-				
-                //- Dias del prestamo 
                 dias <- ValidarDias('Ingrese la cantidad de dias:')
 				
                 //- Cantidad de libros 
@@ -303,6 +338,40 @@ SubProceso RegistrarPrestamo(cantidad_prestamos Por Referencia, inventario Por R
                         FinSi
                     FinSi
                 Hasta Que cantidad_libros >= 1 Y cantidad_libros <= 3
+				
+                //- Seleccion de los libros (ahora si ya se conoce cantidad_libros)
+                Para k <- 1 Hasta 6 Con Paso 1 Hacer
+                    elegido[k] <- Falso
+                FinPara
+				
+                libros_seleccionados <- ''
+                Para k <- 1 Hasta cantidad_libros Con Paso 1 Hacer
+                    Repetir
+                        Escribir ' '
+                        Para j <- 1 Hasta 6 Con Paso 1 Hacer
+                            Escribir j, '. ', titulo_libro(j)
+                        FinPara
+                        libro_elegido <- leer_entero('Libro numero ' + ConvertirATexto(k) + ':')
+                        valido <- Verdadero
+                        Si libro_elegido < 1 O libro_elegido > 6 Entonces
+                            Escribir 'Denegado: elija del 1 al 6.'
+                            valido <- Falso
+                        Sino
+                            Si elegido[libro_elegido] Entonces
+                                Escribir 'Denegado: ese libro ya esta en este prestamo.'
+                                valido <- Falso
+                            FinSi
+                        FinSi
+                    Hasta Que valido
+					
+                    elegido[libro_elegido] <- Verdadero
+					
+                    Si k = 1 Entonces
+                        libros_seleccionados <- titulo_libro(libro_elegido)
+                    Sino
+                        libros_seleccionados <- libros_seleccionados + ', ' + titulo_libro(libro_elegido)
+                    FinSi
+                FinPara
 				
                 //- Guardar datos
                 cantidad_prestamos <- cantidad_prestamos + 1
@@ -321,21 +390,41 @@ SubProceso RegistrarPrestamo(cantidad_prestamos Por Referencia, inventario Por R
                 Escribir 'Codigo del prestamo: ', codigo
                 Escribir 'Dias del prestamo: ', dias
                 Escribir 'Cantidad de libros: ', cantidad_libros
+                Escribir 'Libros: ', libros_seleccionados
                 Escribir 'Libros disponibles ahora: ', inventario
                 Escribir 'Total de prestamos registrados: ', cantidad_prestamos
+				MostrarUsuarios(cantidad_prestamos, prest_usuario, prest_codigo, prest_cant, prest_devuelto)
                 Esperar Tecla
             FinSi
         FinSi
     FinSi
 FinSubProceso
 
+//- SubProceso auxiliar: lista de usuarios guardados
+SubProceso MostrarUsuarios(cantidad_prestamos, prest_usuario Por Referencia, prest_codigo Por Referencia, prest_cant Por Referencia, prest_devuelto Por Referencia)
+    Definir i Como Entero
+	
+    Escribir ' '
+    Escribir '..... USUARIOS REGISTRADOS .....'
+    Si cantidad_prestamos = 0 Entonces
+        Escribir 'No hay usuarios registrados.'
+    Sino
+        Para i <- 1 Hasta cantidad_prestamos Con Paso 1 Hacer
+            Si prest_devuelto[i] Entonces
+                Escribir i, '. ', prest_usuario[i], ' | Codigo: ', prest_codigo[i], ' | Libros: ', prest_cant[i], ' | Devuelto'
+            Sino
+                Escribir i, '. ', prest_usuario[i], ' | Codigo: ', prest_codigo[i], ' | Libros: ', prest_cant[i], ' | Pendiente'
+            FinSi
+        FinPara
+    FinSi
+    Escribir '................................'
+FinSubProceso
 
-//- SubProceso 2: Registrar devolucion
 SubProceso RegistrarDevolucion(cantidad_devoluciones Por Referencia, multas_generadas Por Referencia, cantidad_prestamos Por Referencia, inventario Por Referencia, prest_usuario Por Referencia, prest_codigo Por Referencia, prest_dias Por Referencia, prest_cant Por Referencia, prest_devuelto Por Referencia)
     Definir usuario Como Caracter
-    Definir codigo, posicion, dias_atraso, i Como Entero
+    Definir codigo, posicion, dias_atraso, i, existentes, pendientes Como Entero
     Definir multa Como Real
-    Definir cancelar Como Logico
+    Definir cancelar, por_usuario Como Logico
 	
     Limpiar Pantalla
     Escribir '...... REGISTRO DE DEVOLUCION ......'
@@ -349,23 +438,79 @@ SubProceso RegistrarDevolucion(cantidad_devoluciones Por Referencia, multas_gene
             Escribir 'No hay prestamos pendientes.'
             Esperar Tecla
         Sino
+            //- Se muestran los usuarios guardados
+            MostrarUsuarios(cantidad_prestamos, prest_usuario, prest_codigo, prest_cant, prest_devuelto)
+			
             cancelar <- Falso
             posicion <- 0
 			
-            //- Busqueda del usuario y del codigo
             Repetir
-                usuario <- leer_nombre('Ingrese el nombre del usuario:')
-                codigo <- leer_positivo('Digite el codigo del prestamo que desea devolver:')
-				
+                Escribir 'Buscar el prestamo por:'
+                por_usuario <- escoger('Nombre de usuario', 'Codigo del prestamo')
                 posicion <- 0
-                Para i <- 1 Hasta cantidad_prestamos Hacer
-                    Si prest_codigo[i] = codigo Y prest_devuelto[i] = Falso Y Minusculas(prest_usuario[i]) = Minusculas(usuario) Y posicion = 0 Entonces
-                        posicion <- i
+				
+                Si por_usuario Entonces
+                    //- Busqueda por nombre
+                    usuario <- leer_nombre('Ingrese el nombre del usuario:')
+                    existentes <- 0
+                    pendientes <- 0
+                    Para i <- 1 Hasta cantidad_prestamos Con Paso 1 Hacer
+                        Si Minusculas(prest_usuario[i]) = Minusculas(usuario) Entonces
+                            existentes <- existentes + 1
+                            Si prest_devuelto[i] = Falso Entonces
+                                pendientes <- pendientes + 1
+                                Si posicion = 0 Entonces
+                                    posicion <- i
+                                FinSi
+                            FinSi
+                        FinSi
+                    FinPara
+					
+                    Si existentes = 0 Entonces
+                        Escribir 'DENEGADO: el usuario no existe.'
+                    Sino
+                        Si pendientes = 0 Entonces
+                            Escribir 'DENEGADO: el usuario existe, pero no tiene prestamos pendientes.'
+                        Sino
+                            Si pendientes > 1 Entonces
+                                //- Varios pendientes: se pide el codigo para elegir cual
+                                Escribir 'El usuario tiene ', pendientes, ' prestamos pendientes.'
+                                codigo <- leer_positivo('Digite el codigo del prestamo que desea devolver:')
+                                posicion <- 0
+                                Para i <- 1 Hasta cantidad_prestamos Con Paso 1 Hacer
+                                    Si prest_codigo[i] = codigo Y prest_devuelto[i] = Falso Y Minusculas(prest_usuario[i]) = Minusculas(usuario) Y posicion = 0 Entonces
+                                        posicion <- i
+                                    FinSi
+                                FinPara
+                                Si posicion = 0 Entonces
+                                    Escribir 'DENEGADO: ese codigo no corresponde a un prestamo pendiente de este usuario.'
+                                FinSi
+                            FinSi
+                        FinSi
                     FinSi
-                FinPara
+                Sino
+                    //- Busqueda por codigo
+                    codigo <- leer_positivo('Digite el codigo del prestamo:')
+                    existentes <- 0
+                    Para i <- 1 Hasta cantidad_prestamos Con Paso 1 Hacer
+                        Si prest_codigo[i] = codigo Entonces
+                            existentes <- existentes + 1
+                            Si prest_devuelto[i] = Falso Y posicion = 0 Entonces
+                                posicion <- i
+                            FinSi
+                        FinSi
+                    FinPara
+					
+                    Si existentes = 0 Entonces
+                        Escribir 'DENEGADO: no existe un prestamo con ese codigo.'
+                    Sino
+                        Si posicion = 0 Entonces
+                            Escribir 'DENEGADO: ese prestamo ya fue devuelto.'
+                        FinSi
+                    FinSi
+                FinSi
 				
                 Si posicion = 0 Entonces
-                    Escribir 'ACCESO DENEGADO: no existe un prestamo pendiente para el usuario.'
                     Si NO escoger('Intentar de nuevo', 'Volver al menu principal') Entonces
                         cancelar <- Verdadero
                     FinSi
